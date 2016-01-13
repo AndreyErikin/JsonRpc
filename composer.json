@@ -1,0 +1,23 @@
+{
+  "name": "aerikin/json-rpc",
+  "type": "library",
+  "description": "JSON-RPC 2.0 for PHP",
+  "homepage": "https://github.com/AndreyErikin/JsonRpc",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Andrey Erikin",
+      "email": "andrey.erikin@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "ext-curl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "JsonRpc\\": "src/JsonRpc"
+    }
+  }
+}
