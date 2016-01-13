@@ -5,11 +5,11 @@ use Exception;
 use JsonRpc\Base\JsonRpcException;
 
 /**
- * Class CurlTransport
+ * Class PhpTransport
  *
  * @package JsonRpc\Transport
  */
-class CurlTransport extends Transport
+class PhpTransport extends Transport
 {
     /**
      * Send request.
