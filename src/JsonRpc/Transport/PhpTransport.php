@@ -11,6 +11,8 @@ use JsonRpc\Base\JsonRpcException;
  */
 class PhpTransport extends Transport
 {
+    private $_headers;
+
     /**
      * Send request.
      *
@@ -120,7 +122,8 @@ class PhpTransport extends Transport
                     function ($key, $value) {
                         return $key . ': ' . $value;
                     },
-                    array_keys(getallheaders()), getallheaders()
+                    array_keys($this->getRequestHeaders()),
+                    $this->getRequestHeaders()
                 );
 
                 $logMessage .= implode($this->logItemsDelimiter, $headers) . $this->logBlockDelimiter;
@@ -277,4 +280,32 @@ class PhpTransport extends Transport
 
         exit;
     }
+
+    public function getRequestHeaders()
+    {
+        if ($this->_headers === null) {
+            $this->_headers = [];
+            if (function_exists('getallheaders')) {
+                foreach (getallheaders() as $name => $value) {
+                    $this->_headers[$name] = $value;
+                }
+
+            } elseif (function_exists('http_get_request_headers')) {
+                foreach (http_get_request_headers() as $name => $value) {
+                    $this->_headers[$name] = $value;
+                }
+
+            } else {
+                foreach ($_SERVER as $name => $value) {
+                    if (strncmp($name, 'HTTP_', 5) === 0) {
+                        $name = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                        $this->_headers[$name] = $value;
+                    }
+                }
+            }
+        }
+
+        return $this->_headers;
+    }
+
 }

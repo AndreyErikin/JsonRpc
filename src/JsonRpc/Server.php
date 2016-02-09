@@ -73,11 +73,11 @@ class Server
     /**
      * Exception handler.
      *
-     * @param \Exception $exception
+     * @param \Throwable|\Exception $exception
      *
      * @throws \Exception
      */
-    public function exceptionHandler(Exception $exception)
+    public function exceptionHandler($exception)
     {
         if (!($exception instanceof JsonRpcException)) {
             $exception = $this->displayErrors
