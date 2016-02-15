@@ -1,6 +1,12 @@
 # phpstorm project files
 .idea
 
+# vendor
+vendor/
+
+# composer lock
+composer.lock
+
 # netbeans project files
 nbproject
 

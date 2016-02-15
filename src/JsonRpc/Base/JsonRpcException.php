@@ -12,13 +12,13 @@ class JsonRpcException extends Exception
 {
     const CODE_UNKNOWN_ERROR = 0;
 
-    const CODE_PARSE_ERROR = -32700;
-    const CODE_INVALID_REQUEST = -32600;
+    const CODE_PARSE_ERROR      = -32700;
+    const CODE_INVALID_REQUEST  = -32600;
     const CODE_METHOD_NOT_FOUND = -32601;
-    const CODE_INVALID_PARAMS = -32602;
-    const CODE_INTERNAL_ERROR = -32603;
+    const CODE_INVALID_PARAMS   = -32602;
+    const CODE_INTERNAL_ERROR   = -32603;
 
-    const CODE_SERVER_ERROR = -32000;
+    const CODE_SERVER_ERROR     = -32000;
     const CODE_SERVER_ERROR_MIN = -32099;
     const CODE_SERVER_ERROR_MAX = -32000;
 
@@ -31,7 +31,7 @@ class JsonRpcException extends Exception
      * @param mixed|null      $data
      * @param \Exception|null $previous
      */
-    public function __construct($code = 0, $message = null, $data = null, Exception $previous = null)
+    public function __construct($code = self::CODE_UNKNOWN_ERROR, $message = null, $data = null, Exception $previous = null)
     {
         if ($message === null) {
             $message = self::getErrorMessage($code);

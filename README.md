@@ -1,6 +1,8 @@
 # JsonRpc
 JSON-RPC 2.0 for PHP
 
+[![Build Status](https://travis-ci.org/AndreyErikin/JsonRpc.svg?branch=master)](https://travis-ci.org/AndreyErikin/JsonRpc)
+
 ## Installation
 1. Run command
 ```shell
