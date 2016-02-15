@@ -99,9 +99,8 @@ class Server
      * @param string $message
      * @param string $file
      * @param int    $line
-     * @param array  $context
      */
-    public function errorHandler($code, $message, $file, $line, array $context)
+    public function errorHandler($code, $message, $file, $line)
     {
         $exception = $this->displayErrors
             ? ServerException::fromError(

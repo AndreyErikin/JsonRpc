@@ -1,6 +1,7 @@
 <?php
 
 namespace JsonRpc\Test\Transport;
+
 use JsonRpc\Transport\Transport;
 
 /**
@@ -10,25 +11,11 @@ use JsonRpc\Transport\Transport;
 class TransportTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var string
-     */
-    protected $log;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        $this->log = '';
-    }
-
-    /**
      * @param string $action
      * @param string $message
      */
-    protected function transportCallback($action, $message)
+    public function transportCallback($action, $message)
     {
-        $this->log .= str_replace("\n", "", "[{$action}]{$message}");
     }
 
     /**
@@ -79,5 +66,83 @@ class TransportTest extends \PHPUnit_Framework_TestCase
         $reflectedClass = new \ReflectionClass('JsonRpc\Transport\Transport');
         $constructor = $reflectedClass->getConstructor();
         $constructor->invoke($mock, [$this, 'transportCallback'], [$this, 'transportCallback']);
+    }
+
+    /**
+     *
+     */
+    public function testSetLog()
+    {
+        /** @var Transport $mock */
+        $mock = $this->getMockForAbstractClass('JsonRpc\Transport\Transport');
+
+        $mock->setLog();
+        $this->assertAttributeEquals(null, '_log', $mock);
+
+        $mock->setLog([$this, 'transportCallback']);
+        $this->assertAttributeEquals([$this, 'transportCallback'], '_log', $mock);
+    }
+
+    /**
+     *
+     */
+    public function testSetProfile()
+    {
+        /** @var Transport $mock */
+        $mock = $this->getMockForAbstractClass('JsonRpc\Transport\Transport');
+
+        $mock->setProfile();
+        $this->assertAttributeEquals(null, '_profile', $mock);
+
+        $mock->setProfile([$this, 'transportCallback']);
+        $this->assertAttributeEquals([$this, 'transportCallback'], '_profile', $mock);
+    }
+
+    /**
+     *
+     */
+    public function testSetConnectionTimeout()
+    {
+        /** @var Transport $mock */
+        $mock = $this->getMockForAbstractClass('JsonRpc\Transport\Transport');
+
+        $mock->setConnectionTimeout(null);
+        $this->assertAttributeEquals(0, '_connectionTimeout', $mock);
+
+        $mock->setConnectionTimeout(1);
+        $this->assertAttributeEquals(1, '_connectionTimeout', $mock);
+
+        $mock->setConnectionTimeout('5');
+        $this->assertAttributeEquals(5, '_connectionTimeout', $mock);
+
+        $mock->setConnectionTimeout('some string');
+        $this->assertAttributeEquals(0, '_connectionTimeout', $mock);
+
+        $mock->setConnectionTimeout([]);
+        $this->assertAttributeEquals(0, '_connectionTimeout', $mock);
+    }
+
+    /**
+     *
+     */
+    public function testSetExecutionTimeout()
+    {
+        /** @var Transport $mock */
+        $mock = $this->getMockForAbstractClass('JsonRpc\Transport\Transport');
+
+        $mock->setExecutionTimeout(null);
+        $this->assertAttributeEquals(0, '_executionTimeout', $mock);
+
+        $mock->setExecutionTimeout(1);
+        $this->assertAttributeEquals(1, '_executionTimeout', $mock);
+
+        $mock->setExecutionTimeout('5');
+        $this->assertAttributeEquals(5, '_executionTimeout', $mock);
+
+        $mock->setExecutionTimeout('some string');
+        $this->assertAttributeEquals(0, '_executionTimeout', $mock);
+
+        $mock->setExecutionTimeout([]);
+        $this->assertAttributeEquals(0, '_executionTimeout', $mock);
     }
 }
