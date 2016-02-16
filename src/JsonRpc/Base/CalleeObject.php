@@ -17,7 +17,6 @@ abstract class CalleeObject
      */
     public function getInvocationMethod($method)
     {
-
         return [$this, $method];
     }
 }
