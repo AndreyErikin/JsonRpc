@@ -32,7 +32,7 @@ class Client
 {
     const JSONRPC_VERSION = '2.0';
 
-    const CONTENT_TYPE_DEFAULT = 'application/json-rpc';
+    const CONTENT_TYPE_DEFAULT   = 'application/json-rpc';
     const CONTENT_ENCODE_DEFAULT = 'utf-8';
 
     /** @var string */
@@ -83,41 +83,43 @@ class Client
         $request = [
             'jsonrpc' => self::JSONRPC_VERSION,
             'method'  => $method,
-            'params'  => $namedParameters
-                ? (object)$arguments
-                : array_values($arguments),
+            'params'  => $namedParameters ? (object)$arguments : array_values($arguments),
             'id'      => $id,
         ];
 
         $response = $this->_transport->send(false, $request, $this->url, $this->headers);
 
-        if (!isset($response['jsonrpc'])
-            || $response['jsonrpc'] !== self::JSONRPC_VERSION
-            || !isset($response['id'])
-            || $response['id'] !== $id
-            || (!array_key_exists('result', $response)
-                && !isset($response['error'])
-            )
-        ) {
-
+        // simplify conditions, yeah, got duplicate code, but now we can read this
+        if (!isset($response['jsonrpc'])) {
+            throw new ClientException(ClientException::CODE_INVALID_RESPONSE);
+        }
+        if ($response['jsonrpc'] !== self::JSONRPC_VERSION) {
+            throw new ClientException(ClientException::CODE_INVALID_RESPONSE);
+        }
+        if (!isset($response['id'])) {
+            throw new ClientException(ClientException::CODE_INVALID_RESPONSE);
+        }
+        if ($response['id'] !== $id) {
+            throw new ClientException(ClientException::CODE_INVALID_RESPONSE);
+        }
+        if (!array_key_exists('result', $response) && !isset($response['error'])) {
             throw new ClientException(ClientException::CODE_INVALID_RESPONSE);
         }
 
+
         if (isset($response['error'])) {
-            $errorCode = isset($response['error']['code'])
-                ? $response['error']['code']
-                : ClientException::CODE_UNKNOWN_ERROR;
-
-            $errorMessage = isset($response['error']['message'])
-                ? $response['error']['message']
-                : null;
-
-            $errorData = isset($response['error']['data'])
-                ? $response['error']['data']
-                : null;
-
+            $errorCode = ClientException::CODE_UNKNOWN_ERROR;
+            $errorMessage = $errorData = null;
+            if (isset($response['error']['code'])) {
+                $errorCode = $response['error']['code'];
+            }
+            if (isset($response['error']['message'])) {
+                $errorMessage = $response['error']['message'];
+            }
+            if (isset($response['error']['data'])) {
+                $errorData = $response['error']['data'];
+            }
             throw new ClientException($errorCode, $errorMessage, $errorData);
-
         }
 
         return $response['result'];
@@ -137,9 +139,7 @@ class Client
         $request = [
             'jsonrpc' => self::JSONRPC_VERSION,
             'method'  => $method,
-            'params'  => $namedParameters
-                ? (object)$arguments
-                : array_values($arguments),
+            'params'  => $namedParameters ? (object)$arguments : array_values($arguments),
         ];
 
         return $this->_transport->send(true, $request, $this->url, $this->headers);

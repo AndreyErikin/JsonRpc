@@ -1,6 +1,8 @@
 #JsonRpc
 Клиент и сервер протокола JSON-RPC версии 2.0 на PHP.
 
+[![Build Status](https://travis-ci.org/AndreyErikin/JsonRpc.svg?branch=master)](https://travis-ci.org/AndreyErikin/JsonRpc)
+
 ##Установка
 
 ###Установка через composer
