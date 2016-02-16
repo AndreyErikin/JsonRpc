@@ -68,10 +68,11 @@ class Server
 
         try {
             $this->doRun();
+        } catch (\Exception $exception) {
+            $this->exceptionHandler($exception);
         } catch (\Throwable $exception) {
             $this->exceptionHandler($exception);
         }
-
     }
 
     /**
