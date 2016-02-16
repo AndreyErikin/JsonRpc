@@ -28,10 +28,14 @@ class JsonRpcExceptionTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('Unknown error.', JsonRpcException::getErrorMessage(JsonRpcException::CODE_UNKNOWN_ERROR));
         $this->assertEquals('Parse error.', JsonRpcException::getErrorMessage(JsonRpcException::CODE_PARSE_ERROR));
-        $this->assertEquals('Invalid Request.', JsonRpcException::getErrorMessage(JsonRpcException::CODE_INVALID_REQUEST));
-        $this->assertEquals('Method not found.', JsonRpcException::getErrorMessage(JsonRpcException::CODE_METHOD_NOT_FOUND));
-        $this->assertEquals('Invalid params.', JsonRpcException::getErrorMessage(JsonRpcException::CODE_INVALID_PARAMS));
-        $this->assertEquals('Internal error.', JsonRpcException::getErrorMessage(JsonRpcException::CODE_INTERNAL_ERROR));
+        $this->assertEquals('Invalid Request.',
+            JsonRpcException::getErrorMessage(JsonRpcException::CODE_INVALID_REQUEST));
+        $this->assertEquals('Method not found.',
+            JsonRpcException::getErrorMessage(JsonRpcException::CODE_METHOD_NOT_FOUND));
+        $this->assertEquals('Invalid params.',
+            JsonRpcException::getErrorMessage(JsonRpcException::CODE_INVALID_PARAMS));
+        $this->assertEquals('Internal error.',
+            JsonRpcException::getErrorMessage(JsonRpcException::CODE_INTERNAL_ERROR));
         $this->assertEquals('Server error.', JsonRpcException::getErrorMessage(JsonRpcException::CODE_SERVER_ERROR));
 
         $serverCodeRandom = mt_rand(JsonRpcException::CODE_SERVER_ERROR_MIN, JsonRpcException::CODE_SERVER_ERROR_MAX);

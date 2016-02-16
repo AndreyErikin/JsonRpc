@@ -64,6 +64,7 @@ class Server
 
         ini_set('display_errors', false);
         set_error_handler([$this, 'errorHandler']);
+        register_shutdown_function([$this, 'shutdownHandler']);
 
         try {
             $this->doRun();
@@ -76,7 +77,7 @@ class Server
     /**
      * Exception handler.
      *
-     * @param \Throwable $exception
+     * @param \Throwable|\Exception $exception
      *
      * @throws \Exception
      */
@@ -117,6 +118,26 @@ class Server
             )
             : new ServerException(JsonRpcException::CODE_INTERNAL_ERROR);
         throw $exception;
+    }
+
+    /**
+     * Shutdown handler.
+     */
+    public function shutdownHandler()
+    {
+        $error = error_get_last();
+        if ($error !== null) {
+            $exception = $this->displayErrors
+                ? ServerException::fromError(
+                    $error['type'],
+                    0,
+                    $error['message'],
+                    $error['file'],
+                    $error['line']
+                )
+                : new ServerException(JsonRpcException::CODE_INTERNAL_ERROR);
+            throw $exception;
+        }
     }
 
     /**

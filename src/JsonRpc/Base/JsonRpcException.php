@@ -31,8 +31,12 @@ class JsonRpcException extends Exception
      * @param mixed|null      $data
      * @param \Exception|null $previous
      */
-    public function __construct($code = self::CODE_UNKNOWN_ERROR, $message = null, $data = null, Exception $previous = null)
-    {
+    public function __construct(
+        $code = self::CODE_UNKNOWN_ERROR,
+        $message = null,
+        $data = null,
+        Exception $previous = null
+    ) {
         if ($message === null) {
             $message = self::getErrorMessage($code);
         }
