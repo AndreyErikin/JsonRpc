@@ -136,6 +136,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $response = self::RESPONSE_CALL_NOT_FOUND_METHOD;
 
         $server = new Server($this->getTransportMockServerRun($request), new TestCalleeObject);
+
         $this->expectOutputString("{$response}");
         $server->run();
         $this->assertEquals("[request]{$request}[response]{$response}", $this->log);
@@ -150,6 +151,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $response = self::RESPONSE_ERROR;
 
         $server = new Server($this->getTransportMockServerRun($request), new TestCalleeObject);
+
         $this->expectOutputString("{$response}");
         $server->run();
         $this->assertEquals("[request]{$request}[response]{$response}", $this->log);
@@ -164,6 +166,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $response = self::RESPONSE_JSON_ERROR;
 
         $server = new Server($this->getTransportMockServerRun($request), new TestCalleeObject);
+
         $this->expectOutputString("{$response}");
         $server->run();
         $this->assertEquals("[request]{$request}[response]{$response}", $this->log);
