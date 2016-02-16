@@ -277,8 +277,6 @@ class PhpTransport extends Transport
         }
 
         echo $data;
-
-        exit;
     }
 
     public function getRequestHeaders()

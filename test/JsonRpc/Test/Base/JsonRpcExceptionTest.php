@@ -1,5 +1,4 @@
 <?php
-
 namespace JsonRpc\Test\Base;
 
 use JsonRpc\Base\JsonRpcException;

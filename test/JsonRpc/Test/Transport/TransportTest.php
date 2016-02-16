@@ -1,5 +1,4 @@
 <?php
-
 namespace JsonRpc\Test\Transport;
 
 use JsonRpc\Transport\Transport;

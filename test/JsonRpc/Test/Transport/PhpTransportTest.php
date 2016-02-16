@@ -1,5 +1,4 @@
 <?php
-
 namespace JsonRpc\Test\Transport;
 
 use JsonRpc\Transport\PhpTransport;
@@ -12,11 +11,11 @@ use JsonRpc\Transport\TransportException;
 class PhpTransportTest extends \PHPUnit_Framework_TestCase
 {
     const REQUEST_METHOD_CORRECT = 'POST';
-    const REQUEST_METHOD_ERROR = 'GET';
-    const QUERY_STRING = '';
-    const SERVER_PHP_SELF = '';
-    const CONTENT_TYPE_CORRECT = 'application/json-rpc; charset=utf-8';
-    const CONTENT_TYPE_ERROR = 'error';
+    const REQUEST_METHOD_ERROR   = 'GET';
+    const QUERY_STRING           = '';
+    const SERVER_PHP_SELF        = '';
+    const CONTENT_TYPE_CORRECT   = 'application/json-rpc; charset=utf-8';
+    const CONTENT_TYPE_ERROR     = 'error';
 
     /**
      * @var string
@@ -66,33 +65,23 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
                 'param' => 'value',
             ],
         ];
-
         $this->json = json_encode($this->data);
     }
 
     /**
      * @return \PHPUnit_Framework_MockObject_MockBuilder
      */
-    private function prepareTransportMock()
+    protected function prepareTransportMock()
     {
         return $this->getMockBuilder('\JsonRpc\Transport\PhpTransport')
             ->setConstructorArgs([[$this, 'transportCallback'], [$this, 'transportCallback']]);
     }
 
     /**
-     * @return \JsonRpc\Transport\PhpTransport
-     */
-    protected function getTransportMock()
-    {
-        return $this->prepareTransportMock()
-            ->getMock();
-    }
-
-    /**
      * @param array $data
      * @return \JsonRpc\Transport\PhpTransport
      */
-    protected function getMockSendRequest(array $data)
+    protected function getTransportMockSendRequest(array $data)
     {
         $mock = $this->prepareTransportMock()
             ->setMethods(['sendRequest'])
@@ -106,16 +95,17 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \JsonRpc\Transport\PhpTransport
+     * @return \JsonRpc\Fixtures\Transport\TestPhpTransport
      */
-    protected function getMockSendResponse()
+    protected function getTransportMockSendResponse()
     {
-        $mock = $this->prepareTransportMock()
+        $mock = $this->getMockBuilder('\JsonRpc\Fixtures\Transport\TestPhpTransport')
+            ->setConstructorArgs([[$this, 'transportCallback'], [$this, 'transportCallback']])
             ->setMethods(['sendResponse'])
             ->getMock();
 
         $mock->expects($this->any())
-            ->method('sendRequest')
+            ->method('sendResponse')
             ->willReturn(null);
 
         return $mock;
@@ -125,7 +115,7 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
      * @param mixed $data
      * @return \JsonRpc\Transport\PhpTransport
      */
-    protected function getMockGetRequest($data = null)
+    protected function getTransportMockGetRequest($data = null)
     {
         $mock = $this->prepareTransportMock()
             ->setMethods(['getRequest'])
@@ -164,7 +154,7 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
             'http_code' => 200,
             'response'  => $this->json,
         ];
-        $transport = $this->getMockSendRequest($expected);
+        $transport = $this->getTransportMockSendRequest($expected);
 
         $this->assertEquals($this->data, $transport->send(false, $this->data, $this->url));
         $this->assertAttributeEquals($this->json, 'request', $transport);
@@ -173,12 +163,12 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \JsonRpc\Transport\TransportException
-     * @expectedExceptionCode    -32700
+     * @expectedExceptionCode -32700
      * @expectedExceptionMessage Parse error.
      */
     public function testSendWrongRequest()
     {
-        $this->getMockSendRequest([
+        $this->getTransportMockSendRequest([
             'http_code' => 500,
             'response'  => 'Error data'
         ])->send(false, [], $this->url);
@@ -189,7 +179,7 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendNotification()
     {
-        $transport = $this->getMockSendRequest([
+        $transport = $this->getTransportMockSendRequest([
             'http_code' => 200,
             'response'  => $this->json,
         ]);
@@ -204,7 +194,7 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendWrongNotification()
     {
-        $transport = $this->getMockSendRequest([
+        $transport = $this->getTransportMockSendRequest([
             'http_code' => 500,
             'response'  => 'Error data'
         ]);
@@ -222,7 +212,7 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_METHOD'] = self::REQUEST_METHOD_CORRECT;
         $_SERVER['CONTENT_TYPE'] = self::CONTENT_TYPE_CORRECT;
 
-        $transport = $this->getMockGetRequest($this->json);
+        $transport = $this->getTransportMockGetRequest($this->json);
         $result = $transport->receive();
 
         $this->assertEquals($this->data, $result);
@@ -239,7 +229,7 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_METHOD'] = self::REQUEST_METHOD_CORRECT;
         $_SERVER['CONTENT_TYPE'] = self::CONTENT_TYPE_CORRECT;
 
-        $this->getMockGetRequest('Wrong data')->receive();
+        $this->getTransportMockGetRequest('Wrong data')->receive();
     }
 
     /**
@@ -273,7 +263,7 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
      */
     public function testRespond()
     {
-        $this->getMockSendResponse()->respond($this->data, null);
+        $this->getTransportMockSendResponse()->respond($this->data, null);
         $this->assertEquals("[response]{$this->json}", $this->log);
     }
 
@@ -282,7 +272,7 @@ class PhpTransportTest extends \PHPUnit_Framework_TestCase
      */
     public function testRespondError()
     {
-        $this->getMockSendResponse()->respond($this->data, TransportException::CODE_INTERNAL_ERROR);
+        $this->getTransportMockSendResponse()->respond($this->data, TransportException::CODE_INTERNAL_ERROR);
         $this->assertEquals("[response]{$this->json}", $this->log);
     }
 }
