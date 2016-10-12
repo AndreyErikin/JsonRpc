@@ -33,6 +33,8 @@ class Server
     public $displayErrors = false;
     /** @var array */
     public $headers = [];
+    /** @var null default: E_ALL | E_STRICT */
+    public $errorTypes = null;
 
     /** @var \JsonRpc\Transport\Transport */
     private $_transport;
@@ -62,8 +64,12 @@ class Server
     {
         ob_start();
 
+        if (!$this->errorTypes) {
+            $this->errorTypes = E_ALL | E_STRICT;
+        }
+
         ini_set('display_errors', false);
-        set_error_handler([$this, 'errorHandler']);
+        set_error_handler([$this, 'errorHandler'], $this->errorTypes);
         register_shutdown_function([$this, 'shutdownHandler']);
 
         try {
