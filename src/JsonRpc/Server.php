@@ -153,7 +153,7 @@ class Server
     {
         $request = $this->_transport->receive();
 
-        if (!$this->isValidJsonRpc($request)) {
+        if (!self::isValidJsonRpc($request)) {
             throw $this->displayErrors
                 ? new ServerException(
                     JsonRpcException::CODE_INVALID_REQUEST,
@@ -184,11 +184,11 @@ class Server
     }
 
     /**
-     * @param string $request
+     * @param array $request
      *
      * @return bool
      */
-    protected function isValidJsonRpc($request)
+    protected static function isValidJsonRpc($request)
     {
         if (!isset($request['jsonrpc'])
             || $request['jsonrpc'] !== self::JSONRPC_VERSION
@@ -205,17 +205,17 @@ class Server
             return false;
         }
 
-        if (isset($request['params'])
+        if (array_key_exists('params', $request)
             && !is_array($request['params'])
         ) {
 
             return false;
         }
 
-        if (isset($request['id'])
+        if (array_key_exists('id', $request)
             && (!is_integer($request['id'])
-                || !is_string($request['id'])
-                || !is_null($request['id'])
+                && !is_string($request['id'])
+                && !is_null($request['id'])
             )
         ) {
 
