@@ -2,20 +2,12 @@
 namespace JsonRpc;
 
 use Exception;
+use Throwable;
 use ReflectionFunction;
 use ReflectionMethod;
 use JsonRpc\Base\CalleeObject;
 use JsonRpc\Base\JsonRpcException;
 use JsonRpc\Transport\Transport;
-
-/**
- * Class ServerException
- *
- * @package JsonRpc
- */
-class ServerException extends JsonRpcException
-{
-}
 
 /**
  * Class Server
@@ -26,7 +18,7 @@ class Server
 {
     const JSONRPC_VERSION = '2.0';
 
-    const CONTENT_TYPE_DEFAULT   = 'application/json-rpc';
+    const CONTENT_TYPE_DEFAULT = 'application/json-rpc';
     const CONTENT_ENCODE_DEFAULT = 'utf-8';
 
     /** @var bool */
@@ -74,9 +66,9 @@ class Server
 
         try {
             $this->doRun();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->exceptionHandler($exception);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $this->exceptionHandler($exception);
         }
     }
@@ -84,9 +76,7 @@ class Server
     /**
      * Exception handler.
      *
-     * @param \Throwable|\Exception $exception
-     *
-     * @throws \Exception
+     * @param \Exception|\Throwable $exception
      */
     public function exceptionHandler($exception)
     {
@@ -99,7 +89,9 @@ class Server
                     $exception->getFile(),
                     $exception->getLine()
                 )
-                : new ServerException(JsonRpcException::CODE_INTERNAL_ERROR);
+                : new ServerException(
+                    JsonRpcException::CODE_INTERNAL_ERROR
+                );
         }
         $this->respondError($exception);
     }
@@ -110,8 +102,7 @@ class Server
      * @param string $file
      * @param int    $line
      *
-     * @throws JsonRpcException
-     * @throws ServerException
+     * @throws \JsonRpc\ServerException
      */
     public function errorHandler($code, $message, $file, $line)
     {
@@ -123,12 +114,16 @@ class Server
                 $file,
                 $line
             )
-            : new ServerException(JsonRpcException::CODE_INTERNAL_ERROR);
+            : new ServerException(
+                JsonRpcException::CODE_INTERNAL_ERROR
+            );
         throw $exception;
     }
 
     /**
      * Shutdown handler.
+     *
+     * @throws \JsonRpc\ServerException
      */
     public function shutdownHandler()
     {
@@ -142,12 +137,16 @@ class Server
                     $error['file'],
                     $error['line']
                 )
-                : new ServerException(JsonRpcException::CODE_INTERNAL_ERROR);
+                : new ServerException(
+                    JsonRpcException::CODE_INTERNAL_ERROR
+                );
             throw $exception;
         }
     }
 
     /**
+     * Run process server.
+     *
      * @throws \JsonRpc\ServerException
      */
     protected function doRun()
@@ -156,8 +155,14 @@ class Server
 
         if (!$this->isValidJsonRpc($request)) {
             throw $this->displayErrors
-                ? new ServerException(JsonRpcException::CODE_INVALID_REQUEST, null, $this->_transport->request)
-                : new ServerException(JsonRpcException::CODE_INVALID_REQUEST);
+                ? new ServerException(
+                    JsonRpcException::CODE_INVALID_REQUEST,
+                    null,
+                    $this->_transport->request
+                )
+                : new ServerException(
+                    JsonRpcException::CODE_INVALID_REQUEST
+                );
         }
 
         if (isset($request['id'])) {
@@ -185,28 +190,39 @@ class Server
      */
     protected function isValidJsonRpc($request)
     {
-        if (isset($request['jsonrpc'])
-            && $request['jsonrpc'] === self::JSONRPC_VERSION
-            && isset($request['method'])
-            && is_string($request['method'])
-            && !preg_match('/^rpc\./', $request['method'])
-            && (!isset($request['params'])
-                || isset($request['params'])
-                && is_array($request['params'])
-            ) && (!isset($request['id'])
-                || (isset($request['id'])
-                    && (is_integer($request['id'])
-                        || is_string($request['id'])
-                        || $request['id'] === null
-                    )
-                )
+        if (!isset($request['jsonrpc'])
+            || $request['jsonrpc'] !== self::JSONRPC_VERSION
+        ) {
+
+            return false;
+        }
+
+        if (!isset($request['method'])
+            || !is_string($request['method'])
+            || preg_match('/^rpc\./', $request['method'])
+        ) {
+
+            return false;
+        }
+
+        if (isset($request['params'])
+            && !is_array($request['params'])
+        ) {
+
+            return false;
+        }
+
+        if (isset($request['id'])
+            && (!is_integer($request['id'])
+                || !is_string($request['id'])
+                || !is_null($request['id'])
             )
         ) {
 
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -220,9 +236,16 @@ class Server
     {
         $invocation = $this->_callee->getInvocationMethod($method);
         if (!is_callable($invocation)) {
+
             throw $this->displayErrors
-                ? new ServerException(JsonRpcException::CODE_METHOD_NOT_FOUND, null, $method)
-                : new ServerException(JsonRpcException::CODE_METHOD_NOT_FOUND);
+                ? new ServerException(
+                    JsonRpcException::CODE_METHOD_NOT_FOUND,
+                    null,
+                    $method
+                )
+                : new ServerException(
+                    JsonRpcException::CODE_METHOD_NOT_FOUND
+                );
         }
 
         $callMethod = is_array($invocation)
@@ -246,9 +269,16 @@ class Server
             }
 
             if (!empty($params)) {
+
                 throw $this->displayErrors
-                    ? new ServerException(JsonRpcException::CODE_INVALID_PARAMS, null, $params)
-                    : new ServerException(JsonRpcException::CODE_INVALID_PARAMS);
+                    ? new ServerException(
+                        JsonRpcException::CODE_INVALID_PARAMS,
+                        null,
+                        $params
+                    )
+                    : new ServerException(
+                        JsonRpcException::CODE_INVALID_PARAMS
+                    );
             }
         }
 
@@ -302,7 +332,11 @@ class Server
             ob_end_clean();
         }
 
-        $this->_transport->respond($response, $exception->getCode(), $this->headers);
+        $this->_transport->respond(
+            $response,
+            $exception->getCode(),
+            $this->headers
+        );
     }
 
 }

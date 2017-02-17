@@ -5,6 +5,7 @@ use JsonRpc\Base\JsonRpcException;
 
 /**
  * Class JsonRpcExceptionTest
+ *
  * @package JsonRpc\Test\Base
  */
 class JsonRpcExceptionTest extends \PHPUnit_Framework_TestCase
