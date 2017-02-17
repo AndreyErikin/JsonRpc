@@ -8,11 +8,11 @@ namespace JsonRpc\Transport;
  */
 abstract class Transport
 {
-    const LOG_REQUEST  = 'request';
+    const LOG_REQUEST = 'request';
     const LOG_RESPONSE = 'response';
 
     const PROFILE_BEGIN = 'begin';
-    const PROFILE_END   = 'end';
+    const PROFILE_END = 'end';
 
     // not limit
     const CONNECTION_TIMEOUT_DEFAULT = 0;
@@ -56,7 +56,9 @@ abstract class Transport
      */
     public function setLog($callee = null)
     {
-        $this->_log = $callee && is_callable($callee, true) ? $callee : null;
+        $this->_log = $callee && is_callable($callee, true)
+            ? $callee
+            : null;
     }
 
     /**
@@ -66,7 +68,9 @@ abstract class Transport
      */
     public function setProfile($callee = null)
     {
-        $this->_profile = $callee && is_callable($callee, true) ? $callee : null;
+        $this->_profile = $callee && is_callable($callee, true)
+            ? $callee
+            : null;
     }
 
     /**
@@ -120,4 +124,5 @@ abstract class Transport
      * @throws \JsonRpc\Transport\TransportException
      */
     abstract public function respond($data, $errorCode = null, array $headers = []);
+
 }

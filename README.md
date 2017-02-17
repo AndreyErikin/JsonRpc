@@ -16,8 +16,10 @@ composer require aerikin/json-rpc
     }
 }
 ```
-and run command
+and run command install or update
 ```shell
+composer install
+#or
 composer update
 ```
 
